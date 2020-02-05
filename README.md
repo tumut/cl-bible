@@ -56,18 +56,19 @@ sudo make install
 sudo make uninstall
 ```
 
-We can also install CLIs individually, just use the filename as an identifier (sans suffix, e.g. `vul.tsv` -> `vul`).
+We can also install and uninstall CLIs individually, just use the filename as an identifier (sans suffix, e.g. `vul.tsv` -> `vul`).
 
 ```
 sudo make install-drb
 sudo make install-vul
+sudo make uninstall-drb
+sudo make uninstall-vul
 ```
 
 The default command simply builds all possible CLIs, without installing (equivalent to `make all`). Building them individually also is possible.
 
 ```
 make
-make clean
 make build/drb
 make build/vul
 ```
@@ -75,6 +76,7 @@ make build/vul
 Cleaning all or individually also is supported; this will remove the build files.
 
 ```
+make clean
 make clean-drb
 make clean-vul
 ```
