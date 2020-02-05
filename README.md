@@ -63,6 +63,22 @@ sudo make install-drb
 sudo make install-vul
 ```
 
+The default command simply builds all possible CLIs, without installing (equivalent to `make all`). Building them individually also is possible.
+
+```
+make
+make clean
+make build/drb
+make build/vul
+```
+
+Cleaning all or individually also is supported; this will remove the build files.
+
+```
+make clean-drb
+make clean-vul
+```
+
 ## License
 
 Public domain
