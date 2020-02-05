@@ -1,6 +1,6 @@
-# kjv [![AUR](https://img.shields.io/badge/AUR-kjv--git-blue.svg)](https://aur.archlinux.org/packages/kjv-git/)
+# cl-bible // Command-Line Bible
 
-Read the Word of God from your terminal
+A text-independent version of the CLI in [bontibon/kjv](https://github.com/bontibon/kjv). Instead of forking, now all you need to do is provide a text file (in the appropriate TSV format) and run `make`.
 
 ## Usage
 
@@ -33,11 +33,35 @@ Read the Word of God from your terminal
 
 ## Build
 
-kjv can be built by cloning the repository and then running make:
+First, clone the repository.
 
-    git clone https://github.com/bontibon/kjv.git
-    cd kjv
-    make
+```
+git clone https://github.com/tumut/cl-bible.git
+```
+
+To install a CLI through `cl-bible` you'll need to have one or more `.tsv` files in `cl-bible`'s folder. We shall use [Andrew-William-Smith/drb](https://github.com/Andrew-William-Smith/drb) and [LukeSmithxyz/vul](https://github.com/LukeSmithxyz/vul) as examples, since they inspired this fork.
+
+```
+git clone https://github.com/Andrew-William-Smith/drb.git
+git clone https://github.com/LukeSmithxyz/vul.git
+cd cl-bible
+cp ../drb/drb.tsv .
+cp ../vul/vul.tsv .
+```
+
+We can install and uninstall all CLIs at once.
+
+```
+sudo make install
+sudo make uninstall
+```
+
+We can also install CLIs individually, just use the filename as an identifier (sans suffix, e.g. `vul.tsv` -> `vul`).
+
+```
+sudo make install-drb
+sudo make install-vul
+```
 
 ## License
 
