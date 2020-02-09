@@ -2,6 +2,7 @@
 PREFIX = /usr/local
 
 ALL_SOURCES = $(wildcard *.tsv)
+ALL_BUILDS = $(wildcard build/*)
 INSTALL_DIR = $(DESTDIR)$(PREFIX)/bin
 
 export SH_FILE  = cl-bible.sh
@@ -24,7 +25,7 @@ build/%: build %.tsv $(SH_FILE) $(AWK_FILE)
 build:
 	mkdir -p build
 
-clean: $(ALL_SOURCES:%.tsv=clean-%)
+clean: $(ALL_BUILDS:build/%=clean-%)
 
 clean-%:
 	rm -f build/$*
