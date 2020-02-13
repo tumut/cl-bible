@@ -1,45 +1,66 @@
 
 PREFIX = /usr/local
 
-ALL_SOURCES = $(wildcard *.tsv)
-ALL_BUILDS = $(wildcard build/*)
+BUILD_DIR = bin
 INSTALL_DIR = $(DESTDIR)$(PREFIX)/bin
 
-export SH_FILE  = cl-bible.sh
-export AWK_FILE = cl-bible.awk
+ALL_SOURCES = $(wildcard *.tsv)
 
-all: $(ALL_SOURCES:%.tsv=build/%)
+ALL_BUILDS = $(wildcard $(BUILD_DIR)/*)
+ALL_BUILDS_NAMES = $(ALL_BUILDS:$(BUILD_DIR)/%=%)
 
-build/%: build %.tsv $(SH_FILE) $(AWK_FILE)
+ALL_INSTALLED_NAMES = $(wildcard $(INSTALL_DIR)/*)
+ALL_INSTALLED_NAMES := $(ALL_INSTALLED_NAMES:$(INSTALL_DIR)/%=%)
+ALL_INSTALLED_NAMES := $(filter $(ALL_BUILDS_NAMES), $(ALL_INSTALLED_NAMES))
+
+export SH_FILE  = clb.sh
+export AWK_FILE = clb.awk
+
+.DEFAULT_GOAL = build
+
+$(BUILD_DIR)/%: %.tsv $(SH_FILE) $(AWK_FILE)
 	$(eval CLI_NAME := $*)
 	$(eval TSV_FILE := $*.tsv)
-	@cat $(SH_FILE) \
+	mkdir -p $(BUILD_DIR)
+	cat $(SH_FILE) \
 		| sed "s/@source@/\"$(TSV_FILE)\"/" \
 		| sed "s/@cli_name@/\"$(CLI_NAME)\"/" \
 		| sed "s/@awk_file@/\"$(AWK_FILE)\"/" > $@
 	echo 'exit 0' >> $@
 	echo "#EOF" >> $@
 	tar cz $(AWK_FILE) $(TSV_FILE) >> $@
-	echo "$@"
+	: built $@
 
-build:
-	mkdir -p build
-
-clean: $(ALL_BUILDS:build/%=clean-%)
-
-clean-%:
-	rm -f build/$*
-
-install: $(ALL_SOURCES:%.tsv=install-%)
-
-install-%: build/%
+$(INSTALL_DIR)/%: $(BUILD_DIR)/%
 	mkdir -p $(INSTALL_DIR)
-	cp -f build/$* $(INSTALL_DIR)
+	cp -f $(BUILD_DIR)/$* $(INSTALL_DIR)
 	chmod 755 $(INSTALL_DIR)/$*
+	: installed $*
 
-uninstall: $(ALL_SOURCES:%.tsv=uninstall-%)
+.PHONY: build
+build: $(ALL_SOURCES:%.tsv=$(BUILD_DIR)/%) ;
 
-uninstall-%:
-	rm -f $(DESTDIR)$(PREFIX)/bin/$*
+.PHONY: build-%
+.PRECIOUS: $(BUILD_DIR)/%
+build-%: $(BUILD_DIR)/% ;
 
-.PHONY: all clean clean-% install install-% uninstall uninstall-%
+.PHONY: clean
+clean: $(ALL_BUILDS_NAMES:%=clean-%) ;
+
+.PHONY: clean-%
+clean-%:
+	rm -f $(BUILD_DIR)/$*
+
+.PHONY: install
+install: $(ALL_BUILDS_NAMES:%=install-%) ;
+
+.PHONY: install-%
+.PRECIOUS: $(INSTALL_DIR)/%
+install-%: $(INSTALL_DIR)/% ;
+
+.PHONY: uninstall
+uninstall: $(ALL_INSTALLED_NAMES:%=uninstall-%) ;
+
+.PHONY: uninstall-%
+uninstall-%: $(INSTALL_DIR)/%
+	rm -f $(INSTALL_DIR)/$*
